@@ -6,9 +6,6 @@ import {
   getScreenshotName,
   ScreenshotMetadata,
 } from "@argos-ci/util/browser";
-import { createRequire } from "node:module";
-
-const require = createRequire(import.meta.url)
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -33,7 +30,10 @@ declare global {
 }
 
 function injectArgos() {
-  const fileName = require.resolve("@argos-ci/browser/global.js");
+  const fileName =
+    typeof require?.resolve === "function"
+      ? require.resolve("@argos-ci/browser/global.js")
+      : "node_modules/@argos-ci/browser/dist/global.js";
   cy.readFile<string>(fileName).then((source) =>
     cy.window({ log: false }).then((window) => {
       window.eval(source);
