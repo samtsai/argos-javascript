@@ -6,6 +6,9 @@ import {
   getScreenshotName,
   ScreenshotMetadata,
 } from "@argos-ci/util/browser";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url)
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -30,10 +33,7 @@ declare global {
 }
 
 function injectArgos() {
-  const fileName =
-    typeof require?.resolve === "function"
-      ? require.resolve("@argos-ci/browser/global.js")
-      : "node_modules/@argos-ci/browser/dist/global.js";
+  const fileName = require.resolve("@argos-ci/browser/global.js");
   cy.readFile<string>(fileName).then((source) =>
     cy.window({ log: false }).then((window) => {
       window.eval(source);
@@ -42,10 +42,7 @@ function injectArgos() {
 }
 
 function readArgosCypressVersion() {
-  const fileName =
-    typeof require?.resolve === "function"
-      ? require.resolve("@argos-ci/cypress/package.json")
-      : "node_modules/@argos-ci/cypress/package.json";
+  const fileName = require.resolve("@argos-ci/cypress/package.json");
   return cy.readFile(fileName).then((source) => {
     return source.version;
   });
